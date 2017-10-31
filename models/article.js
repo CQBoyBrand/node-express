@@ -44,6 +44,28 @@ Article.tag = function (params,callback) {
         connection.release();//释放连接池
     });
 };
+
+//前端标签展示
+Article.tagList = function (params,callback) {
+    mysql.pool.getConnection(function(err, connection) {
+        if (err) {
+            console.log("数据库连接失败！");
+            callback(true);
+            return;
+        }
+        console.log("数据库连接成功！");
+        var sql = "SELECT T.tagId, T.tagName ,COUNT(T.tagId) AS artNum FROM tag AS T LEFT JOIN article AS A ON A.artTag = T.tagId GROUP BY T.tagName;";
+        connection.query(sql, params, function(err, results) {
+            if (err) {
+                callback(true);
+                return;
+            }
+            callback(false, results);
+        });
+        connection.release();//释放连接池
+    });
+};
+
 //获取文章数量
 Article.getArticleNum = function (callback) {
     mysql.pool.getConnection(function(err, connection) {
@@ -64,7 +86,7 @@ Article.getArticleNum = function (callback) {
         connection.release();//释放连接池
     });
 };
-//获取文章列表
+//获取文章列表(后台管理系统)
 Article.getArticleList = function (params,callback) {
     mysql.pool.getConnection(function(err, connection) {
         if (err) {
@@ -73,7 +95,7 @@ Article.getArticleList = function (params,callback) {
             return;
         }
         console.log("数据库连接成功！");
-        var sql = "select A.artId, A.artTitle, A.artAbstract, A.artCdate, A.artType, A.artTag, A.published,T.tagName from article as A left join tag T on A.artTag = T.tagId limit ?, ?";
+        var sql = "select A.artId, A.artTitle, A.artAbstract, A.artCdate, A.artType, A.artTag, A.published,T.tagName from article as A left join tag T on A.artTag = T.tagId limit ?, ? ";
         connection.query(sql, params, function(err, results) {
             if (err) {
                 callback(true);
@@ -84,6 +106,105 @@ Article.getArticleList = function (params,callback) {
         connection.release();//释放连接池
     });
 };
+
+//获取文章列表（前台）
+Article.getArtList = function (params, callback) {
+    mysql.pool.getConnection(function(err, connection) {
+        if (err) {
+            console.log("数据库连接失败！");
+            callback(true);
+            return;
+        }
+        console.log("数据库连接成功！");
+        var sql ;
+        if(params == "" || params == undefined){
+            sql = "select A.artId, A.artTitle, A.artAbstract,A.readNum, A.artCdate, A.artType, A.artTag, A.published,T.tagName from article as A left join tag T on A.artTag = T.tagId where A.published =1";
+        }else {
+            sql = "select A.artId, A.artTitle, A.artAbstract,A.readNum, A.artCdate, A.artType, A.artTag, A.published,T.tagName from article as A left join tag T on A.artTag = T.tagId where A.published =1 and A.artType regexp ?";
+        }
+        connection.query(sql, params, function(err, results) {
+            if (err) {
+                callback(true);
+                return;
+            }
+            callback(false, results);
+        });
+        connection.release();//释放连接池
+    });
+};
+
+//获取热门文章列表（前台）
+Article.getHotArtList = function (params, callback) {
+    mysql.pool.getConnection(function(err, connection) {
+        if (err) {
+            console.log("数据库连接失败！");
+            callback(true);
+            return;
+        }
+        console.log("数据库连接成功！");
+        var sql = "select A.artId, A.artTitle, A.published, A.readNum, T.tagName from article as A left join tag T on A.artTag = T.tagId where A.published =1 order by A.readNum DESC limit 6";
+        connection.query(sql, params, function(err, results) {
+            if (err) {
+                callback(true);
+                return;
+            }
+            callback(false, results);
+        });
+        connection.release();//释放连接池
+    });
+};
+
+//根据标签获取文章列表（前台）
+Article.getArticleListByTagId = function (params, callback) {
+    mysql.pool.getConnection(function(err, connection) {
+        if (err) {
+            console.log("数据库连接失败！");
+            callback(true);
+            return;
+        }
+        console.log("数据库连接成功！");
+        var sql = "select A.artId, A.artTitle, A.artAbstract,A.readNum, A.artCdate, A.artType, A.artTag, A.published,T.tagName from article as A left join tag T on A.artTag = T.tagId where A.published =1 and tagId = ?";
+        connection.query(sql, params, function(err, results) {
+            if (err) {
+                callback(true);
+                return;
+            }
+            callback(false, results);
+        });
+        connection.release();//释放连接池
+    });
+};
+
+//获取文章详情（前台）
+Article.getArtDetail = function (params, callback) {
+    var readNum = 0;
+    mysql.pool.getConnection(function(err, connection) {
+        if (err) {
+            console.log("数据库连接失败！");
+            callback(true);
+            return;
+        }
+        console.log("数据库连接成功！");
+        readNum++;
+        var sql = "select artTitle, artCdate, artContent, readNum from article where artId = ?";
+        var sql2 = "UPDATE article SET readNum = readNum+1 WHERE artId = ?";
+        connection.query(sql2, params, function(err, results) {
+            if (err) {
+                callback(true);
+                return;
+            }
+            connection.query(sql, params, function(err, results) {
+                if (err) {
+                    callback(true);
+                    return;
+                }
+                callback(false, results);
+            })
+        });
+        connection.release();//释放连接池
+    });
+}
+
 
 //根据标题查文章
 Article.getArticleByTitle = function (params,callback) {

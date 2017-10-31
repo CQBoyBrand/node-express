@@ -7,10 +7,16 @@ var bodyParser = require('body-parser');
 var cors =require("cors");
 var index = require('./routes/index');
 
-var app = express();
+var history = require('connect-history-api-fallback');
 
+var app = express();
+app.use(history({
+    rewrites: [
+        { from: /^\/abc$/, to: '/' }
+    ]
+}))
 app.use(cors({
-    origin:['http://localhost:8090'],
+    origin:['http://120.78.152.246.:80','http://localhost:8099'],
     methods:['GET','POST'],
     alloweHeaders:['Conten-Type', 'Authorization']
 }));
@@ -25,7 +31,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'dist')));
 
 //主路由
 app.use('/', index);

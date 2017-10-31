@@ -92,3 +92,61 @@ exports.changeStatus = function (req,res) {
         }
     })
 };
+//前端获取文章列表
+exports.getArtList = function (req,res) {
+    var params = req.body;
+    Article.getArtList( [params.artType],function(err, result) {
+        if (err) {
+            res.json(err)
+        }
+        if (result) {
+            //res.json({artList:result,total:result[0].total})
+            res.json({artList:result})
+        }
+    })
+};
+exports.getHotArtList = function (req,res) {
+    Article.getHotArtList( function (err, result) {
+        if(err){
+            res.json(err);
+        }
+        if(result){
+            res.json({hotArtList: result});
+        }
+    });
+};
+exports.getArtDetail = function (req,res) {
+    var params = req.body;
+    Article.getArtDetail( params.artId,function(err, result) {
+        if (err) {
+            res.json(err)
+        }
+        if (result) {
+            //res.json({artList:result,total:result[0].total})
+            res.json({article:result})
+        }
+    })
+};
+
+exports.getTagList = function (req,res) {
+    Article.tagList( function (err, result) {
+        if(err){
+            res.json(err);
+        }
+        if(result){
+            res.json({tagList: result});
+        }
+    });
+};
+exports.getArticleListByTagId = function (req, res) {
+    var params = req.body;
+    Article.getArticleListByTagId( params.tagId,function(err, result) {
+        if (err) {
+            res.json(err)
+        }
+        if (result) {
+            //res.json({artList:result,total:result[0].total})
+            res.json({article:result})
+        }
+    })
+}

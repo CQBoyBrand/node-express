@@ -22,4 +22,14 @@ router.post('/getArticleByTitle', Article.getArticleByTitle);
 router.post('/addArticle', Article.add);
 router.get('/getTag', Article.getTag);
 
+//前台文章
+router.post('/getArtList', Article.getArtList);
+router.post('/getArtDetail', Article.getArtDetail);
+router.post('/getArtListByTagId', Article.getArticleListByTagId);
+router.get('/getHotArtList', Article.getHotArtList);
+
+//前台标签展示
+router.post('/getTags', Article.getTagList);
+/*router.post('/getArtDetail', Article.getArtDetail);*/
+
 module.exports = router;
