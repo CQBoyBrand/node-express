@@ -95,15 +95,34 @@ exports.changeStatus = function (req,res) {
 //前端获取文章列表
 exports.getArtList = function (req,res) {
     var params = req.body;
-    Article.getArtList( [params.artType],function(err, result) {
+    var arr = Object.keys(params)
+    var start = (params.pageNum-1) * params.pageRow;
+    var arg;
+    if(arr.length == 2){
+        arg = [start,params.pageRow]
+    }else {
+        arg = [params.artType,start,params.pageRow]
+    }
+    if(params.artType == undefined){
+        params.artType ="null";
+    }
+    console.log("can="+params.artType)
+    Article.getArticleNum([params.artType], function(err, result) {
         if (err) {
             res.json(err)
         }
         if (result) {
-            //res.json({artList:result,total:result[0].total})
-            res.json({artList:result})
+            Article.getArtList( arg,function(lastErr, lastResult) {
+                if (lastErr) {
+                    res.json(lastErr)
+                }
+                if (lastResult) {
+                    res.json({artList:lastResult,total:result[0].total})
+                }
+            })
         }
     })
+
 };
 exports.getHotArtList = function (req,res) {
     Article.getHotArtList( function (err, result) {

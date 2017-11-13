@@ -67,7 +67,7 @@ Article.tagList = function (params,callback) {
 };
 
 //获取文章数量
-Article.getArticleNum = function (callback) {
+Article.getArticleNum = function (params,callback) {
     mysql.pool.getConnection(function(err, connection) {
         if (err) {
             console.log("数据库连接失败！");
@@ -75,8 +75,15 @@ Article.getArticleNum = function (callback) {
             return;
         }
         console.log("数据库连接成功！");
-        var sql = "select count(*) as total from article;";
-        connection.query(sql, function(err, results) {
+        console.log("Type="+params.length)
+        console.log("Type2="+params)
+        var sql;
+        if( params == "null" ){
+            sql = "select count(*) as total from article;"
+        }else {
+            sql = "select count(*) as total from article where artType = ?;"
+        }
+        connection.query(sql, params, function(err, results) {
             if (err) {
                 callback(true);
                 return;
@@ -117,10 +124,10 @@ Article.getArtList = function (params, callback) {
         }
         console.log("数据库连接成功！");
         var sql ;
-        if(params == "" || params == undefined){
-            sql = "select A.artId, A.artTitle, A.artAbstract,A.readNum, A.artCdate, A.artType, A.artTag, A.published,T.tagName from article as A left join tag T on A.artTag = T.tagId where A.published =1";
+        if(params.length == 2){
+            sql = "select A.artId, A.artTitle, A.artAbstract,A.readNum, A.artCdate, A.artType, A.artTag, A.published,T.tagName from article as A left join tag T on A.artTag = T.tagId where A.published =1 limit ?, ? ";
         }else {
-            sql = "select A.artId, A.artTitle, A.artAbstract,A.readNum, A.artCdate, A.artType, A.artTag, A.published,T.tagName from article as A left join tag T on A.artTag = T.tagId where A.published =1 and A.artType regexp ?";
+            sql = "select A.artId, A.artTitle, A.artAbstract,A.readNum, A.artCdate, A.artType, A.artTag, A.published,T.tagName from article as A left join tag T on A.artTag = T.tagId where A.published =1 and A.artType regexp ? limit ?, ? ";
         }
         connection.query(sql, params, function(err, results) {
             if (err) {

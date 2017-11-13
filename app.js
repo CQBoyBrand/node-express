@@ -16,7 +16,7 @@ app.use(history({
     ]
 }))
 app.use(cors({
-    origin:['http://120.78.152.246.:80','http://localhost:8099'],
+    origin:['http://localhost:8090','http://localhost:8099'],
     methods:['GET','POST'],
     alloweHeaders:['Conten-Type', 'Authorization']
 }));
