@@ -13,9 +13,10 @@ Article.add = function (params,callback) {
             return;
         }
         console.log("数据库连接成功！");
-        var sql = "insert into article values(null,?, ?, ?, ?, ?, ?, ?, ?)";
+        var sql = "insert into article values(null,?, ?, ?, ?, ?, ?, ?, ?, 0)";
         connection.query(sql, params, function(err, results) {
             if (err) {
+                console.log("连接错误="+err)
                 callback(true);
                 return;
             }

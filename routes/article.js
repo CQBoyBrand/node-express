@@ -20,9 +20,11 @@ exports.add = function (req,res) {
     var artId = randomString("A");
     Article.add([artId, params.artTitle, params.artAbstract, params.artCdate, params.artType, params.artTag, params.artContent, params.published], function (err, result) {
         if(err){
+            console.log("Error="+err)
             res.json(err);
         }
         if(result){
+            console.log("RR="+result)
             responseData.code = 0;
             responseData.message = "文章发布成功";
             res.json(responseData);
@@ -43,7 +45,10 @@ exports.getTag = function (req,res) {
 exports.getArticleList = function (req,res) {
     var params = req.body;
     var start = (params.pageNum-1) * params.pageRow;
-    Article.getArticleNum( function(err, result) {
+    if(params.artType == undefined){
+        params.artType ="null";
+    }
+    Article.getArticleNum( [params.artType], function(err, result) {
         if (err) {
             res.json(err)
         }
