@@ -76,8 +76,6 @@ Article.getArticleNum = function (params,callback) {
             return;
         }
         console.log("数据库连接成功！");
-        console.log("Type="+params.length)
-        console.log("Type2="+params)
         var sql;
         if( params == "null" ){
             sql = "select count(*) as total from article;"
@@ -94,6 +92,28 @@ Article.getArticleNum = function (params,callback) {
         connection.release();//释放连接池
     });
 };
+
+//根据标签获取文章数量
+Article.getArticleNumByTag = function (params,callback) {
+    mysql.pool.getConnection(function(err, connection) {
+        if (err) {
+            console.log("数据库连接失败！");
+            callback(true);
+            return;
+        }
+        console.log("数据库连接成功！");
+        var sql = "select count(*) as total from article  where published =1 and artTag = ?;"
+        connection.query(sql, params, function(err, results) {
+            if (err) {
+                callback(true);
+                return;
+            }
+            callback(false, results);
+        });
+        connection.release();//释放连接池
+    });
+};
+
 //获取文章列表(后台管理系统)
 Article.getArticleList = function (params,callback) {
     mysql.pool.getConnection(function(err, connection) {
@@ -126,9 +146,9 @@ Article.getArtList = function (params, callback) {
         console.log("数据库连接成功！");
         var sql ;
         if(params.length == 2){
-            sql = "select A.artId, A.artTitle, A.artAbstract,A.readNum, A.artCdate, A.artType, A.artTag, A.published,T.tagName from article as A left join tag T on A.artTag = T.tagId where A.published =1 limit ?, ? ";
+            sql = "select A.artId, A.artTitle, A.artAbstract,A.readNum, A.artCdate, A.artType, A.artTag, A.published,T.tagName from article as A left join tag T on A.artTag = T.tagId where A.published =1 ORDER BY A.artCdate desc limit ?, ?";
         }else {
-            sql = "select A.artId, A.artTitle, A.artAbstract,A.readNum, A.artCdate, A.artType, A.artTag, A.published,T.tagName from article as A left join tag T on A.artTag = T.tagId where A.published =1 and A.artType regexp ? limit ?, ? ";
+            sql = "select A.artId, A.artTitle, A.artAbstract,A.readNum, A.artCdate, A.artType, A.artTag, A.published,T.tagName from article as A left join tag T on A.artTag = T.tagId where A.published =1 and A.artType regexp ? ORDER BY A.artCdate desc limit ?, ?";
         }
         connection.query(sql, params, function(err, results) {
             if (err) {
@@ -171,7 +191,7 @@ Article.getArticleListByTagId = function (params, callback) {
             return;
         }
         console.log("数据库连接成功！");
-        var sql = "select A.artId, A.artTitle, A.artAbstract,A.readNum, A.artCdate, A.artType, A.artTag, A.published,T.tagName from article as A left join tag T on A.artTag = T.tagId where A.published =1 and tagId = ?";
+        var sql = "select A.artId, A.artTitle, A.artAbstract,A.readNum, A.artCdate, A.artType, A.artTag, A.published,T.tagName from article as A left join tag T on A.artTag = T.tagId where A.published =1 and tagId = ? ORDER BY A.artCdate desc limit ?, ?";
         connection.query(sql, params, function(err, results) {
             if (err) {
                 callback(true);

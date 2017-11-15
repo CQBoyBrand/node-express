@@ -20,11 +20,9 @@ exports.add = function (req,res) {
     var artId = randomString("A");
     Article.add([artId, params.artTitle, params.artAbstract, params.artCdate, params.artType, params.artTag, params.artContent, params.published], function (err, result) {
         if(err){
-            console.log("Error="+err)
             res.json(err);
         }
         if(result){
-            console.log("RR="+result)
             responseData.code = 0;
             responseData.message = "文章发布成功";
             res.json(responseData);
@@ -111,7 +109,6 @@ exports.getArtList = function (req,res) {
     if(params.artType == undefined){
         params.artType ="null";
     }
-    console.log("can="+params.artType)
     Article.getArticleNum([params.artType], function(err, result) {
         if (err) {
             res.json(err)
@@ -164,13 +161,23 @@ exports.getTagList = function (req,res) {
 };
 exports.getArticleListByTagId = function (req, res) {
     var params = req.body;
-    Article.getArticleListByTagId( params.tagId,function(err, result) {
+    var artTag = params.tagId;
+    var start = (params.pageNum-1) * params.pageRow;
+    Article.getArticleNumByTag([artTag],function(err, result) {
         if (err) {
             res.json(err)
         }
         if (result) {
-            //res.json({artList:result,total:result[0].total})
-            res.json({article:result})
+            Article.getArticleListByTagId( [params.tagId, start, params.pageRow],function(LastErr, lastResult) {
+                if (LastErr) {
+                    res.json(LastErr)
+                }
+                if (lastResult) {
+
+                    res.json({article:lastResult,total:result[0].total})
+                }
+            })
         }
     })
+
 }
