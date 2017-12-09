@@ -7,6 +7,9 @@ var Article = require('./article');
 
 //用户
 router.post('/login', User.login);
+router.post('/changePwd', User.changePwd);
+router.post('/getUserInfo', User.getUserInfo);
+router.post('/changeUserInfo', User.changeUserInfo);
 
 //标签
 router.post('/addTag', Tag.add);
@@ -20,7 +23,9 @@ router.post('/getArticleList', Article.getArticleList);
 router.post('/changeStatus', Article.changeStatus);
 router.post('/getArticleByTitle', Article.getArticleByTitle);
 router.post('/addArticle', Article.add);
+router.post('/editArticle', Article.edit);
 router.get('/getTag', Article.getTag);
+router.post('/getArtDetailById', Article.getArtDetailById);
 
 //前台文章
 router.post('/getArtList', Article.getArtList);
@@ -30,6 +35,7 @@ router.get('/getHotArtList', Article.getHotArtList);
 
 //前台标签展示
 router.post('/getTags', Article.getTagList);
-/*router.post('/getArtDetail', Article.getArtDetail);*/
+router.get('/getArticleDate', Article.articleGroupByMonth);
+router.post('/getArticleListByDate', Article.getArticleListByDate);
 
 module.exports = router;

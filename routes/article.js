@@ -15,10 +15,23 @@ function randomString(A) {
         return v.toString(16);
     });
 };
+exports.edit = function (req,res) {
+    var params = req.body;
+    Article.edit([ params.artTitle, params.artThumb, params.artAbstract, params.artType, params.artTag, params.artContent, params.artId], function (err, result) {
+        if(err){
+            res.json(err);
+        }
+        if(result){
+            responseData.code = 0;
+            responseData.message = "文章修改成功";
+            res.json(responseData);
+        }
+    });
+};
 exports.add = function (req,res) {
     var params = req.body;
     var artId = randomString("A");
-    Article.add([artId, params.artTitle, params.artAbstract, params.artCdate, params.artType, params.artTag, params.artContent, params.published], function (err, result) {
+    Article.add([artId, params.artTitle, params.artThumb, params.artAbstract, params.artCdate, params.artType, params.artTag, params.artContent, params.published], function (err, result) {
         if(err){
             res.json(err);
         }
@@ -65,13 +78,13 @@ exports.getArticleList = function (req,res) {
 };
 exports.getArticleByTitle = function (req,res) {
     var params = req.body;
-
+    var start = (params.pageNum-1) * params.pageRow;
     Article.getNumByTitle(params.artTitle, function(err, result) {
         if(err){
             res.json(err)
         }
         if(result){
-            Article.getArticleByTitle(params.artTitle, function(lastErr, lastResult) {
+            Article.getArticleByTitle([params.artTitle,start,params.pageRow], function(lastErr, lastResult) {
                 if(lastErr){
                     res.json(lastErr)
                 }
@@ -181,3 +194,50 @@ exports.getArticleListByTagId = function (req, res) {
     })
 
 }
+//文章归档分类
+exports.articleGroupByMonth = function (req,res) {
+    Article.group(function (err,result) {
+        if (err) {
+            res.json(err)
+        }
+        if (result) {
+            res.json(result)
+        }
+    })
+}
+exports.getArticleListByDate = function (req, res) {
+    var params = req.body;
+    var artCdate = params.artCdate;
+    var start = (params.pageNum-1) * params.pageRow;
+    Article.getArticleNumByDate([artCdate],function(err, result) {
+        if (err) {
+            res.json(err)
+        }
+        if (result) {
+            Article.getArticleListByDate( [params.artCdate, start, params.pageRow],function(LastErr, lastResult) {
+                if (LastErr) {
+                    res.json(LastErr)
+                }
+                if (lastResult) {
+
+                    res.json({article:lastResult,total:result[0].total})
+                }
+            })
+        }
+    })
+
+}
+
+//修改文章获取文章详情
+exports.getArtDetailById = function (req,res) {
+    var params = req.body;
+    Article.getArtDetailById( params.artId,function(err, result) {
+        if (err) {
+            res.json(err)
+        }
+        if (result) {
+            //res.json({artList:result,total:result[0].total})
+            res.json({article:result})
+        }
+    })
+};

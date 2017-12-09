@@ -24,3 +24,86 @@ User.login = function (params,callback) {
         connection.release();//释放连接池
     });
 };
+//验证原始密码
+User.validOldPwd = function (params,callback) {
+    mysql.pool.getConnection(function(err, connection) {
+        if (err) {
+            console.log("数据库连接失败！");
+            callback(true);
+            return;
+        }
+        console.log("数据库连接成功！");
+        var sql = "select password from user where userName =?";
+        connection.query(sql, params, function(err, results) {
+            console.log("EE="+ err)
+            console.log("RR="+ JSON.stringify(results))
+            if (err) {
+                callback(true);
+                return;
+            }
+
+            callback(false, results);
+        });
+        connection.release();//释放连接池
+    });
+};
+//修改密码
+User.changePwd = function (params,callback) {
+    mysql.pool.getConnection(function(err, connection) {
+        if (err) {
+            console.log("数据库连接失败！");
+            callback(true);
+            return;
+        }
+        console.log("数据库连接成功！");
+        var sql = "update user set password = ? where userName = ?;";
+        connection.query(sql, params, function(err, results) {
+            if (err) {
+                callback(true);
+                return;
+            }
+            callback(false, results);
+        });
+        connection.release();//释放连接池
+    });
+};
+//查询用户信息
+User.getUserInfo = function (params,callback) {
+    mysql.pool.getConnection(function(err, connection) {
+        if (err) {
+            console.log("数据库连接失败！");
+            callback(true);
+            return;
+        }
+        console.log("数据库连接成功！");
+        var sql = "select nickName, email, weibo, github, introduce from user where userName = ?;";
+        connection.query(sql, params, function(err, results) {
+            if (err) {
+                callback(true);
+                return;
+            }
+            callback(false, results);
+        });
+        connection.release();//释放连接池
+    });
+};
+//修改用户信息
+User.changeUserInfo = function (params,callback) {
+    mysql.pool.getConnection(function(err, connection) {
+        if (err) {
+            console.log("数据库连接失败！");
+            callback(true);
+            return;
+        }
+        console.log("数据库连接成功！");
+        var sql = "update user set nickName = ?, email =?, weibo =?, github=?, introduce =? where userName = ?;";
+        connection.query(sql, params, function(err, results) {
+            if (err) {
+                callback(true);
+                return;
+            }
+            callback(false, results);
+        });
+        connection.release();//释放连接池
+    });
+};

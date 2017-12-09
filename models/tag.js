@@ -33,7 +33,7 @@ Tag.getTagList = function (params,callback) {
             return;
         }
         console.log("数据库连接成功！");
-        var sql = "select * from tag limit ?,?;";
+        var sql = "SELECT T.tagId, T.tagName, T.tagDescription ,COUNT(T.tagId) AS artNum FROM tag AS T LEFT JOIN article AS A ON A.artTag = T.tagId GROUP BY T.tagName limit ?,?;";
         connection.query(sql, params, function(err, results) {
             if (err) {
                 callback(true);
