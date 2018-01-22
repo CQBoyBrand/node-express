@@ -1,6 +1,7 @@
 /**
  * Created By brand On 2017/10/16
  */
+const utility = require('utility')
 var User = require("../models/user");
 var responseData = {
     code: 0,
@@ -21,7 +22,9 @@ exports.login = function (req,res) {
         res.json(responseData);
         return;
     }
-    User.login([params.userName, params.password], function(err, result) {
+
+    let userPwd = md5Pwd(params.password);
+    User.login([params.userName, userPwd], function(err, result) {
         if (err) {
         }
         if (result == "" || result == null ) {
@@ -66,17 +69,17 @@ exports.changePwd = function (req,res) {
         return;
     }
     User.validOldPwd([userName], function (beforeErr,beforeResult) {
-        console.log("R="+beforeResult[0].password)
-        console.log("E="+beforeErr)
+        let odlPwd = md5Pwd(params.oldPwd)
         if (beforeErr) {
         }
-        if(  params.oldPwd != beforeResult[0].password ){
+        if(  odlPwd != beforeResult[0].password ){
             responseData.code = 3;
             responseData.message = "输入的原始密码不正确";
             res.json(responseData);
             return;
         }else {
-            User.changePwd([ params.newPwd,userName], function(err, result) {
+            let newPwd = md5Pwd(params.newPwd)
+            User.changePwd([ newPwd,userName], function(err, result) {
                 if (err) {
                 }
                 if (result == "" || result == null ) {
@@ -124,4 +127,10 @@ exports.changeUserInfo = function (req,res) {
         }
     })
 };
+
+//密码加密
+function md5Pwd(pwd) {
+    const salt = '!@~重~庆@`崽`儿`B`r`a$n^d*$%&*#';
+    return utility.md5(utility.md5(salt + pwd))
+}
 
