@@ -2,6 +2,7 @@
  * Created By brand On 2017/10/16
  */
 var Article = require("../models/article");
+var Comment = require("../models/comments");
 var responseData = {
     code: 0,
     message: ''
@@ -156,8 +157,15 @@ exports.getArtDetail = function (req,res) {
             res.json(err)
         }
         if (result) {
-            //res.json({artList:result,total:result[0].total})
-            res.json({article:result})
+            console.log(result)
+            Comment.getComment(params.artId,function (errComment,resultComment,) {
+                if(errComment){
+                    res.json(err)
+                }
+                result[0].comment = resultComment
+                res.json({article:result})
+            })
+
         }
     })
 };

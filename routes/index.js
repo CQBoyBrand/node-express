@@ -5,6 +5,7 @@ var User = require('./user');
 var Tag = require('./tag');
 var Link = require('./link');
 var Article = require('./article');
+var Comments = require('./comments');
 
 //用户
 router.post('/login', User.login);
@@ -46,5 +47,8 @@ router.get('/getHotArtList', Article.getHotArtList);
 router.post('/getTags', Article.getTagList);
 router.get('/getArticleDate', Article.articleGroupByMonth);
 router.post('/getArticleListByDate', Article.getArticleListByDate);
+
+//文章评论
+router.post('/addComment', Comments.addComment);
 
 module.exports = router;
