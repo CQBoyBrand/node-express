@@ -185,9 +185,9 @@ Article.getArtList = function (params, callback) {
         console.log("数据库连接成功！");
         var sql ;
         if(params.length == 2){
-            sql = "select A.artId, A.artTitle, A.artThumb, A.artAbstract,A.readNum, A.artCdate, A.artType, A.artTag, A.published,T.tagName from article as A left join tag T on A.artTag = T.tagId where A.published =1 ORDER BY A.artCdate desc limit ?, ?";
+            sql = "select A.artId, A.artTitle, A.artThumb, A.artAbstract,A.readNum, A.artCdate, A.artType, A.artTag, A.published,T.tagName ,(select count(C.commentId) from comment as C where C.artId=A.artId ) AS commentNum from article as A left join tag T on A.artTag = T.tagId where A.published =1 ORDER BY A.artCdate desc limit ?, ?";
         }else {
-            sql = "select A.artId, A.artTitle, A.artThumb,A.artAbstract,A.readNum, A.artCdate, A.artType, A.artTag, A.published,T.tagName from article as A left join tag T on A.artTag = T.tagId where A.published =1 and A.artType regexp ? ORDER BY A.artCdate desc limit ?, ?";
+            sql = "select A.artId, A.artTitle, A.artThumb,A.artAbstract,A.readNum, A.artCdate, A.artType, A.artTag, A.published,T.tagName,(select count(C.commentId) from comment as C where C.artId=A.artId ) AS commentNum from article as A left join tag T on A.artTag = T.tagId where A.published =1 and A.artType regexp ? ORDER BY A.artCdate desc limit ?, ?";
         }
         connection.query(sql, params, function(err, results) {
             if (err) {

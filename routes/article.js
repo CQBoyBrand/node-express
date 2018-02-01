@@ -157,8 +157,7 @@ exports.getArtDetail = function (req,res) {
             res.json(err)
         }
         if (result) {
-            console.log(result)
-            Comment.getComment(params.artId,function (errComment,resultComment,) {
+            Comment.getComment(params.artId,function (errComment,resultComment) {
                 if(errComment){
                     res.json(err)
                 }

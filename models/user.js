@@ -35,8 +35,6 @@ User.validOldPwd = function (params,callback) {
         console.log("数据库连接成功！");
         var sql = "select password from user where userName =?";
         connection.query(sql, params, function(err, results) {
-            console.log("EE="+ err)
-            console.log("RR="+ JSON.stringify(results))
             if (err) {
                 callback(true);
                 return;

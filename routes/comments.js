@@ -3,6 +3,7 @@
  */
 const utility = require('utility')
 var Comment = require("../models/comments");
+var nodemailer = require('nodemailer');
 var responseData = {
     code: 0,
     message: ''
@@ -20,10 +21,10 @@ function randomString(A) {
 //新增评论
 exports.addComment = function (req, res) {
     var params = req.body;
-    let webSite = params.userWebsite || "";
+    let webSite = params.userWebsite || "javascript:void(0)";
+    let parentCommentId = params.parentCommentId || "";
     let fromUserId = randomString("U");
-    let commentId = randomString("C");
-    Comment.add([commentId,params.artId,fromUserId, params.userName, params.userEmail, webSite, params.Content,params.commentTime], function (err, result) {
+    Comment.add([parentCommentId,params.commentId,params.artId,fromUserId, params.userName, params.userEmail,params.toUserEmail, webSite, params.Content,params.commentTime], function (err, result) {
         if (err) {
         }
         if (result.affectedRows == "0") {
@@ -35,6 +36,50 @@ exports.addComment = function (req, res) {
             responseData.code = 4;
             responseData.message = "评论成功";
             res.json(responseData);
+
+            //有评论回复时邮件提醒
+            var transporter = nodemailer.createTransport({
+                host: 'smtp.qq.com',
+                secure: true,
+                port:'465',
+                auth: {
+                    user: '@qq.com',
+                    pass: '' //授权码,通过QQ获取
+                }
+            });
+            var mailOptionsToAuthor = {
+                from: '@qq.com', // 发送者
+                to: '@163.com', // 接受者,可以同时发送多个,以逗号隔开
+                subject: '你的博客有新的评论了', // 标题
+                text: `来自  ${params.userName} 的评论回复：${params.Content}`, // 文本
+                html: `<p> 来自${params.userName} 的评论回复：${params.Content}</p><br><a href="http://www.brandhuang.com/detail/${params.artId}" target="_blank">[ 点击查看 ]</a>`
+            };
+            var mailOptionsToCommentor = {
+                from: '2769536052@qq.com', // 发送者
+                to: `${params.toUserEmail}`, // 接受者,可以同时发送多个,以逗号隔开
+                subject: 'hello,你在重庆崽儿Brand的博客有新的评论回复,点击查看吧', // 标题
+                text: `来自 ${params.userName} 的评论回复：${params.Content}`, // 文本
+                html: `<p> 来自${params.userName} 的评论回复：${params.Content}</p><br><a href="http://www.brandhuang.com/detail/${params.artId}" target="_blank">[ 点击查看 ]</a>`
+            };
+            if(params.toUserEmail == null || params.toUserEmail == ""){
+                transporter.sendMail(mailOptionsToAuthor, function (err, info) {
+                    if (err) {
+                        console.log(err);
+                        return;
+                    }
+                    console.log('发送成功');
+                });
+            }else {
+                transporter.sendMail(mailOptionsToCommentor, function (err, info) {
+                    if (err) {
+                        return;
+                    }
+                    console.log('发送成功');
+                });
+            }
+
+
+
             return;
         }
     })
