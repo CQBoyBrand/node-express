@@ -16,7 +16,7 @@ app.use(history({
     ]
 }))
 app.use(cors({
-    origin:['http://www.brandhuang.com','http://admin.brandhuang.com','http://localhost:8090','http://localhost:8099','http://localhost:4001','http://192.168.31.220:4001'],
+    origin:['http://www.brandhuang.com','http://localhost:8090','http://localhost:8099','http://localhost:4001','http://192.168.31.220:4001'],
     methods:['GET','POST'],
     alloweHeaders:['Content-Type', 'Authorization']
 }));
