@@ -14,12 +14,12 @@ var responseData = {
     message: ''
 }
 var ipLimiter = new RateLimit({
-    windowMs: 20*1000, // 20秒
+    windowMs: 30*1000, // 20秒
     max: 1, // start blocking after 5 requests
-    message: "不要再戳啦，休息20秒再战可好！",
+    message: "不要再戳啦，休息30秒再战可好！",
     handler: function (req, res) { // 响应格式
         responseData.code = 439;
-        responseData.message = "不要再戳啦，休息20秒再战可好！";
+        responseData.message = "不要再戳啦，休息30秒再战可好！";
         res.json(responseData);
     }
 });
@@ -60,10 +60,11 @@ router.post('/getArtDetail', Article.getArtDetail);
 router.post('/getArtListByTagId', Article.getArticleListByTagId);
 router.get('/getHotArtList', Article.getHotArtList);
 
+
 //前台标签展示
 router.post('/getTags', Article.getTagList);
 router.get('/getArticleDate', Article.articleGroupByMonth);
-router.post('/getArticleListByDate', Article.getArticleListByDate);
+router.post('/getArticleListByDate', Article.getArtListByDate);
 
 //文章评论
 router.post('/addComment',ipLimiter,Comments.addComment);

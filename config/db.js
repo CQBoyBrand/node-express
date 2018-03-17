@@ -2,8 +2,8 @@ module.exports = {
     mysql: {
         host: 'localhost',
         user: 'root',
-        password: '',
-        database:'blog',
+        password: 'Brand',
+        database:'blog-new',
         timezone: '08:00'
     }
 };

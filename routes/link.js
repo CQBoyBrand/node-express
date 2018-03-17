@@ -2,6 +2,7 @@
  * Created By brand On 2017/10/16
  */
 var Link = require("../models/link");
+var Comment = require("../models/comments");
 var responseData = {
     code: 0,
     message: ''
@@ -18,7 +19,7 @@ function randomString(A) {
 exports.add = function (req,res) {
     var params = req.body;
     var linkId = randomString();
-    Link.add([linkId, params.linkName,  params.linkAddress], function(err, result) {
+    Link.add([linkId, params.linkName,  params.linkAddress,params.linkAvatar,params.linkDescription], function(err, result) {
         if (err) {
             res.json(err)
         }
@@ -49,18 +50,25 @@ exports.getLink = function (req,res) {
 };
 //(前端获取友链列表)
 exports.getWebLink = function (req,res) {
+    var params = req.body;
     Link.getWebLinkList( function(lastErr, lastResult) {
         if(lastErr){
             res.json(err);
         }
         if(lastResult){
-            res.json({linkList:lastResult})
+            Comment.getComment(params.artId,function (errComment,resultComment) {
+                if(errComment){
+                    res.json(err)
+                }
+                res.json({linkList:lastResult,comment:resultComment})
+            })
+
         }
     })
 };
 exports.editLink = function (req,res) {
     var params = req.body;
-    Link.edit([ params.linkName,  params.linkAddress, params.linkId], function(err, result) {
+    Link.edit([ params.linkName,  params.linkAddress,params.linkAvatar,params.linkDescription, params.linkId], function(err, result) {
         if (err) {
             res.json(err)
         }

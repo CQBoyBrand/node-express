@@ -185,9 +185,9 @@ Article.getArtList = function (params, callback) {
         console.log("数据库连接成功！");
         var sql ;
         if(params.length == 2){
-            sql = "select A.artId, A.artTitle, A.artThumb, A.artAbstract,A.readNum, A.artCdate, A.artType, A.artTag, A.published,T.tagName ,(select count(C.commentId) from comment as C where C.artId=A.artId ) AS commentNum from article as A left join tag T on A.artTag = T.tagId where A.published =1 ORDER BY A.artCdate desc limit ?, ?";
+            sql = "select A.artId, A.artTitle, A.artThumb, A.artAbstract,A.readNum,DATE_FORMAT(A.artCdate,'%Y年%m月%d日') as artCdate, A.artType, A.artTag, A.published,T.tagName ,(select count(C.commentId) from comment as C where C.artId=A.artId ) AS commentNum from article as A left join tag T on A.artTag = T.tagId where A.published =1 ORDER BY A.artCdate desc limit ?, ?";
         }else {
-            sql = "select A.artId, A.artTitle, A.artThumb,A.artAbstract,A.readNum, A.artCdate, A.artType, A.artTag, A.published,T.tagName,(select count(C.commentId) from comment as C where C.artId=A.artId ) AS commentNum from article as A left join tag T on A.artTag = T.tagId where A.published =1 and A.artType regexp ? ORDER BY A.artCdate desc limit ?, ?";
+            sql = "select A.artId, A.artTitle, A.artThumb,A.artAbstract,A.readNum, DATE_FORMAT(A.artCdate,'%Y年%m月%d日') as artCdate, A.artType, A.artTag, A.published,T.tagName,(select count(C.commentId) from comment as C where C.artId=A.artId ) AS commentNum from article as A left join tag T on A.artTag = T.tagId where A.published =1 and A.artType regexp ? ORDER BY A.artCdate desc limit ?, ?";
         }
         connection.query(sql, params, function(err, results) {
             if (err) {
@@ -230,7 +230,7 @@ Article.getArticleListByTagId = function (params, callback) {
             return;
         }
         console.log("数据库连接成功！");
-        var sql = "select A.artId, A.artTitle,A.artThumb, A.artAbstract,A.readNum, A.artCdate, A.artType, A.artTag, A.published,T.tagName from article as A left join tag T on A.artTag = T.tagId where A.published =1 and tagId = ? ORDER BY A.artCdate desc limit ?, ?";
+        var sql = "select A.artId, A.artTitle,A.artThumb, A.artAbstract,A.readNum, DATE_FORMAT(A.artCdate,'%Y年%m月%d日') as artCdate, A.artType, A.artTag, A.published,T.tagName,(select count(C.commentId) from comment as C where C.artId=A.artId ) AS commentNum from article as A left join tag T on A.artTag = T.tagId where A.published =1 and tagId = ? ORDER BY A.artCdate desc limit ?, ?";
         connection.query(sql, params, function(err, results) {
             if (err) {
                 callback(true);
@@ -273,7 +273,7 @@ Article.getArtDetail = function (params, callback) {
         }
         console.log("数据库连接成功！");
         readNum++;
-        var sql = "select artTitle, artCdate,artThumb, artContent, readNum from article where artId = ?";
+        var sql = "select artTitle, DATE_FORMAT(artCdate,'%Y年%m月%d日') as artCdate,artThumb, artContent, readNum from article where artId = ?";
         var sql2 = "UPDATE article SET readNum = readNum+1 WHERE artId = ?";
         connection.query(sql2, params, function(err, results) {
             if (err) {
@@ -365,7 +365,7 @@ Article.group = function (params,callback) {
             return;
         }
         console.log("数据库连接成功！");
-        var sql = "SELECT DATE_FORMAT(artCdate, '%Y-%m') as Archive, COUNT(*) as Num FROM article WHERE published = '1' GROUP BY Archive Order By Archive desc";
+        var sql = "SELECT DATE_FORMAT(artCdate, '%Y年%m月') as Archive,DATE_FORMAT(artCdate, '%Y-%m') as artCdate, COUNT(*) as Num FROM article WHERE published = '1' GROUP BY Archive Order By Archive desc";
         connection.query(sql, params, function(err, results) {
             if (err) {
                 callback(true);
@@ -405,7 +405,8 @@ Article.getArticleListByDate = function (params, callback) {
             return;
         }
         console.log("数据库连接成功！");
-        var sql = "select A.artId, A.artTitle,A.artThumb, A.artAbstract,A.readNum, A.artCdate, A.artType, A.artTag, A.published,T.tagName from article as A left join tag T on A.artTag = T.tagId where A.published =1 and A.artCdate regexp ? ORDER BY A.artCdate desc limit ?, ?";
+        console.log(params)
+        var sql = "select A.artId, A.artTitle,A.artThumb, A.artAbstract,A.readNum,DATE_FORMAT(A.artCdate,'%Y年%m月%d日') as artCdate, A.artType, A.artTag, A.published,T.tagName,(select count(C.commentId) from comment as C where C.artId=A.artId ) AS commentNum from article as A left join tag T on A.artTag = T.tagId where A.published =1 and A.artCdate regexp ? ORDER BY A.artCdate desc limit ?, ?";
         connection.query(sql, params, function(err, results) {
             if (err) {
                 callback(true);

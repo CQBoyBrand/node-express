@@ -157,13 +157,20 @@ exports.getArtDetail = function (req,res) {
             res.json(err)
         }
         if (result) {
-            Comment.getComment(params.artId,function (errComment,resultComment) {
-                if(errComment){
-                    res.json(err)
-                }
-                result[0].comment = resultComment
-                res.json({article:result})
-            })
+            if(result.length != 0){
+                Comment.getComment(params.artId,function (errComment,resultComment) {
+                    if(errComment){
+                        res.json(err)
+                    }
+                    result[0].comment = resultComment
+                    res.json({article:result[0]})
+                })
+            }else {
+                responseData.code = -1;
+                responseData.message = "你查看页面不见了~~";
+                res.json(responseData);
+            }
+
 
         }
     })
@@ -188,15 +195,21 @@ exports.getArticleListByTagId = function (req, res) {
             res.json(err)
         }
         if (result) {
-            Article.getArticleListByTagId( [params.tagId, start, params.pageRow],function(LastErr, lastResult) {
-                if (LastErr) {
-                    res.json(LastErr)
-                }
-                if (lastResult) {
+            if(result[0].total>0){
+                Article.getArticleListByTagId( [params.tagId, start, params.pageRow],function(LastErr, lastResult) {
+                    if (LastErr) {
+                        res.json(LastErr)
+                    }
+                    if (lastResult) {
+                        res.json({article:lastResult,total:result[0].total})
+                    }
+                })
+            }else {
+                responseData.code = -1;
+                responseData.message = "你查看页面不见了~~";
+                res.json(responseData);
+            }
 
-                    res.json({article:lastResult,total:result[0].total})
-                }
-            })
         }
     })
 
@@ -212,7 +225,7 @@ exports.articleGroupByMonth = function (req,res) {
         }
     })
 }
-exports.getArticleListByDate = function (req, res) {
+exports.getArtListByDate = function (req, res) {
     var params = req.body;
     var artCdate = params.artCdate;
     var start = (params.pageNum-1) * params.pageRow;
