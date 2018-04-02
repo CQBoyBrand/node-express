@@ -3,7 +3,7 @@ module.exports = {
         host: 'localhost',
         user: 'root',
         password: 'Brand',
-        database:'blog-new',
+        database:'blog',
         timezone: '08:00'
     }
 };

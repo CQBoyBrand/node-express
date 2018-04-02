@@ -44,7 +44,7 @@ exports.addComment = function (req, res) {
                 port:'465',
                 auth: {
                     user: 'hellobugworld@qq.com',
-                    pass: 'jmgsnpgxzjbodcef' //授权码,通过QQ获取
+                    pass: '' //授权码,通过QQ获取
                 }
             });
             var mailOptionsToAuthor = {
