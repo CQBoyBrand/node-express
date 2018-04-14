@@ -130,7 +130,7 @@ exports.changeUserInfo = function (req,res) {
 
 //密码加密
 function md5Pwd(pwd) {
-    const salt = '!@~重~庆@`崽`儿`B`r`a$n^d*$%&*#';
+    const salt = '记得加盐哦';
     return utility.md5(utility.md5(salt + pwd))
 }
 

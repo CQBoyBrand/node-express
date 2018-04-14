@@ -37,6 +37,13 @@ exports.addComment = function (req, res) {
             responseData.message = "评论成功";
             res.json(responseData);
 
+            var toURL = '';
+            if(params.artId == 'friends'){
+                toURL = "http://www.brandhuang.com/"+params.artId;
+            }else {
+                toURL = 'http://www.brandhuang.com/detail/'+params.artId
+            }
+
             //有评论回复时邮件提醒
             var transporter = nodemailer.createTransport({
                 host: 'smtp.qq.com',
@@ -44,7 +51,7 @@ exports.addComment = function (req, res) {
                 port:'465',
                 auth: {
                     user: 'hellobugworld@qq.com',
-                    pass: '' //授权码,通过QQ获取
+                    pass: '记得去QQ邮箱获取授权码' //授权码,通过QQ获取
                 }
             });
             var mailOptionsToAuthor = {
@@ -52,14 +59,14 @@ exports.addComment = function (req, res) {
                 to: 'brandhuang@qq.com', // 接受者,可以同时发送多个,以逗号隔开
                 subject: '你的博客有新的评论了', // 标题
                 text: `来自  ${params.userName} 的评论回复：${params.Content}`, // 文本
-                html: `<p> 来自${params.userName} 的评论回复：${params.Content}</p><br><a href="http://www.brandhuang.com/detail/${params.artId}" target="_blank">[ 点击查看 ]</a>`
+                html: `<p> 来自${params.userName} 的评论回复：${params.Content}</p><br><a href="${toURL}" target="_blank">[ 点击查看 ]</a>`
             };
             var mailOptionsToCommentor = {
                 from: '重庆崽儿Brand<hellobugworld@qq.com>', // 发送者
                 to: `${params.toUserEmail}`, // 接受者,可以同时发送多个,以逗号隔开
                 subject: 'hello,你在重庆崽儿Brand的博客有新的评论回复,点击查看吧', // 标题
                 text: `来自 ${params.userName} 的评论回复：${params.Content}`, // 文本
-                html: `<p> 来自${params.userName} 的评论回复：${params.Content}</p><br><a href="http://www.brandhuang.com/detail/${params.artId}" target="_blank">[ 点击查看 ]</a>`
+                html: `<p> 来自${params.userName} 的评论回复：${params.Content}</p><br><a href="${toURL}" target="_blank">[ 点击查看 ]</a>`
             };
             if(params.toUserEmail == null || params.toUserEmail == ""){
                 transporter.sendMail(mailOptionsToAuthor, function (err, info) {
